@@ -1,4 +1,4 @@
-import { Request, Response, response, Router } from "express";
+import { Router } from "express";
 import { postController } from "./post.controller";
 
 const router = Router();
