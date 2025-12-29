@@ -43,17 +43,29 @@ export const auth = betterAuth({
         requireEmailVerification: true
     },
     emailVerification: {
+        sendOnSignUp : true,
         sendVerificationEmail: async ({ user, url, token }, request) => {
-            const verficationUrl = `${process.env.APP_URL}/verify-email?token=${token}`
-            const info = await transporter.sendMail({
-                from: '"Blog App by Prisma" <naeeim@gmail.com>',
-                to: "mdkhairulb01@gmail.com",
-                subject: "Please Verify your email",
-                html: verifyEmailTemplate(verficationUrl, user.name)
-            });
+            try {
+                const verficationUrl = `${process.env.APP_URL}/verify-email?token=${token}`
+                const info = await transporter.sendMail({
+                    from: '"Blog App by Prisma" <naeeim@gmail.com>',
+                    to: user.email,
+                    subject: "Please Verify your email",
+                    html: verifyEmailTemplate(verficationUrl, user.name) 
+                });
 
-            console.log("Message sent:", info.messageId);
+                console.log("Message sent:", info.messageId);
+            } catch (error: any) {
+                console.error("Error sending verification email:", error);
+                throw new Error("Could not send verification email");
+            }
         }
 
+    }, 
+    socialProviders: {
+        google: { 
+            clientId: process.env.GOOGLE_CLIENT_ID as string, 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+        }, 
     }
 });
