@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import nodemailer from 'nodemailer'
+import { verifyEmailTemplate } from "../utils/EmailTemplate/emailTemplate";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -43,12 +44,12 @@ export const auth = betterAuth({
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token }, request) => {
+            const verficationUrl = `${process.env.APP_URL}/verify-email?token=${token}`
             const info = await transporter.sendMail({
                 from: '"Blog App by Prisma" <naeeim@gmail.com>',
                 to: "mdkhairulb01@gmail.com",
-                subject: "Hello ✔",
-                text: "Hello world?", // Plain-text version of the message
-                html: "<b>Hello world?</b>", // HTML version of the message
+                subject: "Please Verify your email",
+                html: verifyEmailTemplate(verficationUrl, user.name)
             });
 
             console.log("Message sent:", info.messageId);
