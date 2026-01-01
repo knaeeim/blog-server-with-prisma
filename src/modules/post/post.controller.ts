@@ -21,7 +21,8 @@ const getAllPosts = async (req: Request, res: Response) => {
     try {
         const { search } = req.query;
         const searchTerm = typeof search === 'string' ? search : undefined;
-        const result = await postServices.getAllPosts({ searchTerm });
+        const tags = req.query.tags ? (req.query.tags as string).split(',') : [];
+        const result = await postServices.getAllPosts({ searchTerm, tags });
         res.status(200).json({
             message: "Posts retrieved successfully",
             data: result

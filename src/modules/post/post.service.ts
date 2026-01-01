@@ -1,4 +1,5 @@
 import { Post } from "../../../generated/prisma/client";
+import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
 const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'authorId'>, authorId: string) => {
@@ -6,25 +7,47 @@ const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'a
     return result;
 }
 
-const getAllPosts = async (payLoad: { searchTerm: string | undefined }) => {
+const getAllPosts = async ({ searchTerm, tags }: { searchTerm: string | undefined, tags: string[] | [] }) => {
+
+    const andConditions : PostWhereInput[] = [];
+
+    if (searchTerm) {
+        {
+            OR: [
+                {
+                    title: {
+                        contains: searchTerm as string,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    content: {
+                        contains: searchTerm as string,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    tags: {
+                        has: searchTerm as string
+                    }
+                }
+
+            ]
+        }
+    }
+
+    if (tags.length > 0) {
+        {
+            tags: {
+                hasEvery: tags
+            }
+        }
+    }
+
     const posts = await prisma.post.findMany(
         {
             where: {
-                OR: [
-                    {
-                        title: {
-                            contains: payLoad.searchTerm as string,
-                            mode: 'insensitive'
-                        }
-                    }, 
-                    {
-                        content : {
-                            contains : payLoad.searchTerm as string, 
-                            mode : 'insensitive'
-                        }
-                    }
-
-                ]
+                AND: andConditions
             }
         }
     );
