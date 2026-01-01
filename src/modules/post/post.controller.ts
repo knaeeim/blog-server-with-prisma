@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { postServices } from "./post.service";
+import { string } from "better-auth/*";
 
 const createPost = async (req: Request, res: Response) => {
     try {
@@ -18,20 +19,22 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
     try {
-        const result = await postServices.getAllPosts();
+        const { search } = req.query;
+        const searchTerm = typeof search === 'string' ? search : undefined;
+        const result = await postServices.getAllPosts({ searchTerm });
         res.status(200).json({
             message: "Posts retrieved successfully",
             data: result
         })
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({
             message: error.message,
             details: error
         })
     }
-} 
+}
 
 export const postController = {
-    createPost, 
+    createPost,
     getAllPosts
 }
