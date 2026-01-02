@@ -7,12 +7,12 @@ const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'a
     return result;
 }
 
-const getAllPosts = async ({ searchTerm, tags }: { searchTerm: string | undefined, tags: string[] | [] }) => {
+const getAllPosts = async ({ searchTerm, tags, isFeaturedBool }: { searchTerm: string | undefined, tags: string[] | [], isFeaturedBool: boolean | undefined }) => {
 
-    const andConditions : PostWhereInput[] = [];
+    const andConditions: PostWhereInput[] = [];
 
     if (searchTerm) {
-        {
+        andConditions.push({
             OR: [
                 {
                     title: {
@@ -33,15 +33,21 @@ const getAllPosts = async ({ searchTerm, tags }: { searchTerm: string | undefine
                 }
 
             ]
-        }
+        })
     }
 
     if (tags.length > 0) {
-        {
+        andConditions.push({
             tags: {
                 hasEvery: tags
             }
-        }
+        })
+    }
+
+    if(typeof isFeaturedBool === 'boolean'){
+        andConditions.push({
+            isFeatured : isFeaturedBool
+        })
     }
 
     const posts = await prisma.post.findMany(

@@ -22,11 +22,20 @@ const getAllPosts = async (req: Request, res: Response) => {
         const { search } = req.query;
         const searchTerm = typeof search === 'string' ? search : undefined;
         const tags = req.query.tags ? (req.query.tags as string).split(',') : [];
-        const result = await postServices.getAllPosts({ searchTerm, tags });
-        res.status(200).json({
-            message: "Posts retrieved successfully",
-            data: result
-        })
+        const { isFeatured } = req.query;
+        const isFeaturedBool = isFeatured === 'true' ? true : isFeatured === 'false' ? false : undefined;
+        const result = await postServices.getAllPosts({ searchTerm, tags, isFeaturedBool });
+        if (result.length === 0) {
+            res.status(200).json({
+                message: "No posts found",
+                data: []
+            })
+        } else {
+            res.status(200).json({
+                message: "Posts retrieved successfully",
+                data: result
+            })
+        }
     } catch (error: any) {
         res.status(500).json({
             message: error.message,
