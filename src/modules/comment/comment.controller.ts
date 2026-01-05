@@ -20,13 +20,13 @@ const createComment = async (req: Request, res: Response) => {
 
 const getCommentById = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         const result = await commentServices.getCommentById(id as string);
         res.status(200).json({
             message: "Comment retrieved successfully",
             data: result
         })
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({
             message: error.message,
             details: error
@@ -35,15 +35,15 @@ const getCommentById = async (req: Request, res: Response) => {
 }
 
 
-const getCommentByAuthorId = async ( req: Request, res: Response) => {
+const getCommentByAuthorId = async (req: Request, res: Response) => {
     try {
-        const { authorID } = req.params; 
+        const { authorID } = req.params;
         const result = await commentServices.getCommentByAuthorId(authorID as string);
         res.status(200).json({
             message: "Comments retrieved successfully",
             data: result
         })
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({
             message: error.message,
             details: error
@@ -51,16 +51,34 @@ const getCommentByAuthorId = async ( req: Request, res: Response) => {
     }
 }
 
-const deleteComment = async ( req: Request, res: Response) => {
+const deleteComment = async (req: Request, res: Response) => {
     try {
         const user = req.user;
-        const { id } = req.params; 
+        const { id } = req.params;
         const result = await commentServices.deleteComment(id as string, user?.id as string);
         res.status(200).json({
             message: "Comment Deleted successfully",
             data: result
         })
-    } catch (error : any) {
+    } catch (error: any) {
+        res.status(500).json({
+            message: error.message,
+            details: error
+        })
+    }
+}
+
+
+const updateComment = async (req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        const { id } = req.params;
+        const result = await commentServices.updateComment(id as string, user?.id as string, req.body);
+        res.status(200).json({
+            message: "Comment Updated successfully",
+            data: result
+        })
+    } catch (error: any) {
         res.status(500).json({
             message: error.message,
             details: error
@@ -70,8 +88,9 @@ const deleteComment = async ( req: Request, res: Response) => {
 
 
 export const commentController = {
-    createComment, 
-    getCommentByAuthorId, 
-    getCommentById, 
-    deleteComment
+    createComment,
+    getCommentByAuthorId,
+    getCommentById,
+    deleteComment,
+    updateComment
 }
