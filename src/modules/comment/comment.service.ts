@@ -59,9 +59,25 @@ const getCommentByAuthorId = async (authorID: string) => {
     })
 }
 
+const deleteComment = async (id: string, userId : string) => {
+    const result = await prisma.comment.deleteMany({
+        where : {
+            id, 
+            authorID: userId
+        }
+    })
+
+    if(result.count === 0){
+        throw new Error ("Comment not found or you are not authorized to delete this comment");
+    }
+
+    return result;
+}
+
 
 export const commentServices = {
     createComment,
     getCommentById,
-    getCommentByAuthorId
+    getCommentByAuthorId,
+    deleteComment
 }
