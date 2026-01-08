@@ -74,9 +74,26 @@ const getPostDataById = async (req: Request, res: Response) => {
     }
 }
 
+const getMyPosts = async (req: Request, res: Response) => {
+    try {
+        const user = req.user; 
+        const result = await postServices.getMyPosts(user?.id as string);
+        res.status(200).json({
+            message: "Posts retrieved successfully",
+            data: result
+        });
+    } catch (error : any) {
+        res.status(500).json({
+            message: error.message,
+            details: error
+        })
+    }
+}
+
 
 export const postController = {
     createPost,
     getAllPosts,
-    getPostDataById
+    getPostDataById, 
+    getMyPosts
 }
