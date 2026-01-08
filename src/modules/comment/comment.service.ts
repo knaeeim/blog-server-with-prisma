@@ -103,10 +103,28 @@ const updateComment = async (commentId : string, authorId : string , data : { co
     return updatedComment;
 }
 
+const moderateComment = async (commentId : string, data : { status : CommentStatus }) => {
+    await prisma.comment.findUniqueOrThrow({
+        where : {
+            id: commentId
+        }
+    })
+
+    return await prisma.comment.update({
+        where : {
+            id : commentId
+        }, 
+        data : {
+            ...data
+        }
+    })
+}
+
 export const commentServices = {
     createComment,
     getCommentById,
     getCommentByAuthorId,
     deleteComment,
-    updateComment
+    updateComment,
+    moderateComment
 }

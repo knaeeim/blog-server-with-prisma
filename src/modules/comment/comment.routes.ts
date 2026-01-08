@@ -2,7 +2,7 @@ import { Router } from "express";
 import { commentController } from "./comment.controller";
 import auth, { UserRole } from "../../middlewares/auth";
 
-const router = Router(); 
+const router = Router();
 
 router.get('/:id', commentController.getCommentById);
 
@@ -13,5 +13,7 @@ router.post('/', auth(UserRole.ADMIN, UserRole.USER), commentController.createCo
 router.delete('/:id', auth(UserRole.ADMIN, UserRole.USER), commentController.deleteComment);
 
 router.patch('/:id', auth(UserRole.ADMIN, UserRole.USER), commentController.updateComment);
+
+router.patch('/moderate/:commentId', auth(UserRole.ADMIN), commentController.moderateComment);
 
 export const commentRoutes = router;
