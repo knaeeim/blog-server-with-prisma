@@ -14,6 +14,6 @@ router.get('/:id', postController.getPostDataById);
 
 router.patch('/my-post/:postId', auth(UserRole.USER, UserRole.ADMIN), postController.updateMyOwnPost);
 
-
+router.delete('/delete/:postId', auth(UserRole.USER, UserRole.ADMIN), postController.deletePost);
 
 export const postRouter = router;

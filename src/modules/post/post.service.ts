@@ -176,10 +176,28 @@ const updateMyOwnPost = async (postId: string, authorId: string, data: Partial<P
     })
 }
 
+const deletePost = async (postId : string, authorId : string, isAdmin : boolean) => {
+    if(!isAdmin){
+        await prisma.post.findUniqueOrThrow({
+            where : {
+                id :postId, 
+                authorId
+            }
+        })
+    }
+
+    return await prisma.post.delete({
+        where : {
+            id : postId
+        }
+    })
+}
+
 export const postServices = {
     createPost,
     getAllPosts,
     getPostDataById,
     getMyPosts,
     updateMyOwnPost,
+    deletePost,
 }
