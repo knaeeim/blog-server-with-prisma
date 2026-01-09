@@ -90,10 +90,32 @@ const getMyPosts = async (req: Request, res: Response) => {
     }
 }
 
+const updateMyOwnPost = async ( req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        const { postId } = req.params;
+        const data = req.body;
+        if(!postId){
+            throw new Error("Post ID is required");
+        }
+        const result = await postServices.updateMyOwnPost(postId as string, user?.id as string, data );
+        res.status(200).json({
+            message: "Post updated successfully",
+            data: result
+        });
+    } catch (error : any) {
+        res.status(500).json({
+            message: error.message,
+            details: error
+        })
+    }
+}
+
 
 export const postController = {
     createPost,
     getAllPosts,
     getPostDataById, 
-    getMyPosts
+    getMyPosts, 
+    updateMyOwnPost,
 }

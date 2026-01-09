@@ -12,6 +12,8 @@ router.get('/my-posts', auth(UserRole.USER, UserRole.ADMIN), postController.getM
 
 router.get('/:id', postController.getPostDataById);
 
+router.patch('/my-post/:postId', auth(UserRole.USER, UserRole.ADMIN), postController.updateMyOwnPost);
+
 
 
 export const postRouter = router;

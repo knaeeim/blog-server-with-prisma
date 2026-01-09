@@ -150,9 +150,42 @@ const getMyPosts = async (authorId : string) => {
     })
 }
 
+const updateMyOwnPost = async (postId : string, authorId : string, data : Partial<Post>) => {
+    // first need to check authorId is exists or not or post belongs to the author or not, or If he is a admin then also he can update
+    const existsUser = await prisma.user.findUniqueOrThrow({
+        where : {
+            id : authorId,
+            status : "ACTIVE"
+        }
+    })
+
+    
+    const post = await prisma.post.findUniqueOrThrow({
+        where : {
+            id : postId,
+            authorId
+        }
+    })
+
+    if(post.authorId !== existsUser.id){
+        throw new Error("You are not authorized to update this post");
+    }
+
+    return await prisma.post.update({
+        where : {
+            id : postId, 
+            authorId
+        }, 
+        data : {
+            ...data
+        }
+    })
+}
+
 export const postServices = {
     createPost,
     getAllPosts,
     getPostDataById, 
-    getMyPosts
+    getMyPosts, 
+    updateMyOwnPost,
 }
