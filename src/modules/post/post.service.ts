@@ -150,20 +150,25 @@ const getMyPosts = async (authorId: string) => {
     })
 }
 
-const updateMyOwnPost = async (postId: string, authorId: string, data: Partial<Post>) => {
+const updateMyOwnPost = async (postId: string, authorId: string, data: Partial<Post>, isAdmin: boolean) => {
     // first need to check authorId is exists or not or post belongs to the author or not, or If he is a admin then also he can update
 
-    await prisma.post.findUniqueOrThrow({
-        where: {
-            id: postId,
-            authorId
-        }
-    })
+    if (!isAdmin) {
+        await prisma.post.findUniqueOrThrow({
+            where: {
+                id: postId,
+                authorId
+            }
+        })
+    }
+
+    if(!isAdmin){
+        delete data.isFeatured;
+    }
 
     return await prisma.post.update({
         where: {
             id: postId,
-            authorId
         },
         data: {
             ...data

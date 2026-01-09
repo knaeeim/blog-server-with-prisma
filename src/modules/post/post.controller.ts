@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { postServices } from "./post.service";
 import paginationSortingHelper from "../../helpers/paginationSortingHelper";
+import { UserRole } from "../../middlewares/auth";
 
 const createPost = async (req: Request, res: Response) => {
     try {
@@ -98,7 +99,8 @@ const updateMyOwnPost = async ( req: Request, res: Response) => {
         if(!postId){
             throw new Error("Post ID is required");
         }
-        const result = await postServices.updateMyOwnPost(postId as string, user?.id as string, data );
+        const isAdmin = user?.role === UserRole.ADMIN;
+        const result = await postServices.updateMyOwnPost(postId as string, user?.id as string, data , isAdmin);
         res.status(200).json({
             message: "Post updated successfully",
             data: result
