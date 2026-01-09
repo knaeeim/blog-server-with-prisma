@@ -59,11 +59,11 @@ const getAllPosts = async ({ searchTerm, tags, isFeaturedBool, page, limit, sort
             },
             orderBy: {
                 [sortBy]: sortOrder
-            }, 
-            include : {
-                _count : {
-                    select : {
-                        comments : true
+            },
+            include: {
+                _count: {
+                    select: {
+                        comments: true
                     }
                 }
             }
@@ -134,49 +134,38 @@ const getPostDataById = async (id: string) => {
 }
 
 
-const getMyPosts = async (authorId : string) => {
+const getMyPosts = async (authorId: string) => {
 
     await prisma.user.findUniqueOrThrow({
-        where : {
-            id : authorId,
-            status : "ACTIVE"
+        where: {
+            id: authorId,
+            status: "ACTIVE"
         }
     })
 
     return await prisma.post.findMany({
-        where : {
+        where: {
             authorId
         }
     })
 }
 
-const updateMyOwnPost = async (postId : string, authorId : string, data : Partial<Post>) => {
+const updateMyOwnPost = async (postId: string, authorId: string, data: Partial<Post>) => {
     // first need to check authorId is exists or not or post belongs to the author or not, or If he is a admin then also he can update
-    const existsUser = await prisma.user.findUniqueOrThrow({
-        where : {
-            id : authorId,
-            status : "ACTIVE"
-        }
-    })
 
-    
-    const post = await prisma.post.findUniqueOrThrow({
-        where : {
-            id : postId,
+    await prisma.post.findUniqueOrThrow({
+        where: {
+            id: postId,
             authorId
         }
     })
-
-    if(post.authorId !== existsUser.id){
-        throw new Error("You are not authorized to update this post");
-    }
 
     return await prisma.post.update({
-        where : {
-            id : postId, 
+        where: {
+            id: postId,
             authorId
-        }, 
-        data : {
+        },
+        data: {
             ...data
         }
     })
@@ -185,7 +174,7 @@ const updateMyOwnPost = async (postId : string, authorId : string, data : Partia
 export const postServices = {
     createPost,
     getAllPosts,
-    getPostDataById, 
-    getMyPosts, 
+    getPostDataById,
+    getMyPosts,
     updateMyOwnPost,
 }
