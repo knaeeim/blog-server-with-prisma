@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { postServices } from "./post.service";
 import paginationSortingHelper from "../../helpers/paginationSortingHelper";
 import { UserRole } from "../../middlewares/auth";
 
-const createPost = async (req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await postServices.createPost(req.body, req.user?.id as string);
         res.status(201).json({
@@ -11,10 +11,7 @@ const createPost = async (req: Request, res: Response) => {
             data: result
         })
     } catch (error: any) {
-        res.status(500).json({
-            message: error.message,
-            details: error
-        })
+        next(error);
     }
 }
 
